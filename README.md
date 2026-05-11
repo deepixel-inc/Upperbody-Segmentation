@@ -64,6 +64,7 @@ Below is an illustration showing the **segmentation coverage**:
 ## **HumanX Native NAVER API Reference**
 
 Created Date: 2026-04-14
+Updated Date: 2026-05-11
 
 ## Scope
 
@@ -385,6 +386,18 @@ C `UpperbodySegmentationSDK` inference result.
     - `output` - Output structure to store the result.
   - Returns: `true` if processing/result generation succeeds, `false` otherwise.
 
+- `bool dpxl_coreai_upperbodyseg_naver_process_with_device_rotation(DpxlCoreAIUpperBodySegmentationNaver* handle, const DpxlFrameInput* data, double blurSigma, DpxlDeviceRotation deviceRotation, DpxlCoreAIUpperBodySegmentationOutput* output)`
+  - Process image for `UpperbodySegmentationSDK`.
+  - Parameters:
+    - `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
+    - `data` - Processing data containing image information.
+    - `blurSigma` - Gaussian blur sigma for segmentation post-processing (default: 0.5).
+      - Lower values → sharper edges, potentially more noise
+      - Higher values → smoother results, may reduce fine details
+    - `deviceRotation` - The rotation angle of the device (in degrees, counterclockwise) (default: 0)
+    - `output` - Output structure to store the result.
+  - Returns: `true` if processing/result generation succeeds, `false` otherwise.
+
 ## Minimal Include Examples
 
 ### C++
@@ -441,7 +454,7 @@ In this repository, the recommended JS surface is the wrapper in `samples-naver/
   - `async initialize(): Promise<boolean>`
   - `async isInitialized(): Promise<boolean>`
   - `isProcessing(): boolean`
-  - `async process(timestamp, dataPtr, dataSize, width, height, stride, imageType, isStill, blurSigma = 0.5): Promise<ProcessResult>`
+  - `async process(timestamp, dataPtr, dataSize, width, height, stride, imageType, isStill, blurSigma = 0.5, deviceRotation = 0): Promise<ProcessResult>`
   - `destroy(): void`
 
 `ProcessResult` shape:
@@ -463,6 +476,7 @@ In this repository, the recommended JS surface is the wrapper in `samples-naver/
 - `imageType` -> `DpxlFrameInput.imageType`
 - `isStill` -> `DpxlFrameInput.isStill`
 - `blurSigma` -> `dpxl_coreai_upperbodyseg_naver_process(..., blurSigma, ...)`
+- `deviceRotation` -> `dpxl_coreai_upperbodyseg_naver_process_with_device_rotation(..., deviceRotation, ...)`
 
 ### ImageType in Browser Sample
 
@@ -483,6 +497,7 @@ const imagePtr = wasmModule._malloc(imageSize);
 wasmModule.HEAPU8.set(rgbaBytes, imagePtr);
 
 const imageType = Number(wasmModule.ImageType.RGBA_8888);
+const deviceRotation = enumToInt(wasmModule.DeviceRotation.ROTATION_0);
 const result = await seg.process(
   Date.now() >>> 0,
   imagePtr,
@@ -492,7 +507,8 @@ const result = await seg.process(
   width * 4,
   imageType,
   true,
-  0.5
+  0.5,
+  deviceRotation
 );
 
 wasmModule._free(imagePtr);
@@ -514,5 +530,3 @@ Wrapper internally uses embind classes exposed by WASM runtime, including:
 - `CoreAIUpperBodySegmentationNaver`
 
 Advanced users can call these directly, but wrapper usage is preferred for predictable object lifecycle and normalized result conversion.
-
-
