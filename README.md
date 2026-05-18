@@ -475,8 +475,8 @@ Implementation notes:
 #### Device Rotation Guide (Video/Camera)
 
 - This guidance applies to `isStill=false` (video/camera input).
-- For `isStill=true` (single image), pass an upright image with `deviceRotation=DPXL_DEVICE_ROTATION_0`.
-- Always pass an upright image to the SDK. Use `deviceRotation` to specify the device's rotation: `DPXL_DEVICE_ROTATION_0` (portrait), `DPXL_DEVICE_ROTATION_90` (landscape), `DPXL_DEVICE_ROTATION_180` (upside-down), or `DPXL_DEVICE_ROTATION_270` (landscape).
+- For `isStill=true` (single image), pass an upright image and call `dpxl_coreai_upperbodyseg_naver_process` (no need to specify device rotation).
+- For `isStill=false` (video/camera), always pass an upright image and call `dpxl_coreai_upperbodyseg_naver_process_with_device_rotation` with the appropriate device rotation.
 
 | Rotation | When the user is holding the phone in this orientation | Image to pass to SDK | Image size WxH |
 |---|---|---|---|
