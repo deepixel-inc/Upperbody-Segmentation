@@ -485,6 +485,28 @@ Implementation notes:
 | `DPXL_DEVICE_ROTATION_180` (180°) | <img src="docs/images/device-rotation-2-view.png" width="220" /> | <img src="docs/images/device-rotation-2-input.png" width="220" /> | 720 x 1280 |
 | `DPXL_DEVICE_ROTATION_270` (270°) | <img src="docs/images/device-rotation-3-view.png" width="220" /> | <img src="docs/images/device-rotation-3-input.png" width="220" /> | 1280 x 720 |
 
+##### Example: Detecting Device Rotation in Android
+
+You can use `OrientationEventListener` to detect device rotation at runtime:
+
+```kotlin
+mOrientationListener = object : OrientationEventListener(this) {
+    override fun onOrientationChanged(orientation: Int) {
+        if (orientation == ORIENTATION_UNKNOWN) {
+            return
+        }
+
+        val dpxlRotation = when (orientation) {
+            in 315..360, in 0..44 -> DpxlDeviceRotation.DPXL_DEVICE_ROTATION_0    // 0°
+            in 45..134 -> DpxlDeviceRotation.DPXL_DEVICE_ROTATION_90              // 90°
+            in 135..224 -> DpxlDeviceRotation.DPXL_DEVICE_ROTATION_180            // 180°
+            else -> DpxlDeviceRotation.DPXL_DEVICE_ROTATION_270                   // 270°
+        }
+        // Use dpxlRotation when calling process_with_device_rotation()
+    }
+}
+```
+
 ## Minimal Include Examples
 
 ### C++
