@@ -49,6 +49,14 @@ Below is an illustration showing the **segmentation coverage**:
 | Mean IoU <br> Mean Boundary F1 <br> Mean Boundary IoU | **97.28%** <br> **95.13%** <br> **83.24%** | EasyPortrait<br> test dataset<br> (4,000 images) |
 | Mean IoU <br> Mean Boundary F1 <br> Mean Boundary IoU | **96.25%** <br> **91.66%** <br> **76.15%** | EG1800 dataset<br> (1,736 images) |
 
+### Benchmark Note
+
+> The accuracy results above were obtained by applying a threshold of **128** to the segmentation mask before evaluation (i.e., pixels ≥ 128 → foreground, otherwise → background).
+>
+> If no threshold is applied, the evaluation code may apply its own threshold (e.g., at pixel value 35), which can produce slightly different results.
+>
+> Evaluation code: [deepixel-inc/Upperbody-Evaluation](https://github.com/deepixel-inc/Upperbody-Evaluation)
+
 
 ### 3. SDK Size
 | 플랫폼 | 파일 | Uncompressed | Compressed (gzip) |
@@ -169,7 +177,12 @@ Input frame descriptor for image processing APIs.
 
 **Fields**:
 
-- `unsigned int timestamp` - Frame timestamp propagated by the caller (unit defined by caller).
+- `unsigned int timestamp` - Frame timestamp in **milliseconds**, monotonically increasing per frame.
+  - Used internally by the mask algorithm. Providing accurate timestamps improves results for video/camera input (`isStill=false`). For still images (`isStill=true`), any value is acceptable.
+  - For camera input, use the capture time of each frame.
+  - For video input, increment by `1000.0 / fps` per frame (e.g., 0, 33, 66, … for 30 fps).
+  - Reset to 0 when switching to a new video — this triggers an internal context reset.
+  - Does not need to start from 0, but avoid overflow.
 - `ImageBuffer frame` - Input frame image buffer and memory layout information.
 - `DP_IMAGE_TYPE imageType` - Pixel format of `frame`. Default: `BGRA_8888` (recommended for GL readback paths).
 - `bool isStill` - True for still image input, false for streaming/video frame input.
@@ -192,7 +205,7 @@ Input frame descriptor for image processing APIs.
 - Same resolution as input image
 - Foreground confidence per pixel:
   - 255: confirmed foreground (human region)
-  - 1–254: soft edge / transition region
+  - 1–254: foreground confidence (may appear anywhere in the mask)
   - 0: background
 
 #### Mask Compositing (How to apply the mask to an image)
@@ -237,7 +250,7 @@ High-performance `UpperbodySegmentationSDK` engine.
 - Each pixel ranges from 0–255, representing foreground probability.
 - Pixel-level foreground confidence:
   - `255`: confirmed foreground (human region)
-  - `1–254`: soft edge / transition region
+  - `1–254`: foreground confidence (may appear anywhere in the mask)
   - `0`: background
   - Users may threshold (e.g., >128) to obtain a binary mask.
 
@@ -329,7 +342,12 @@ C input frame descriptor for image processing APIs.
 
 **Fields**:
 
-- `uint32_t timestamp` - Frame timestamp propagated by the caller.
+- `uint32_t timestamp` - Frame timestamp in **milliseconds**, monotonically increasing per frame.
+  - Used internally by the mask algorithm. Providing accurate timestamps improves results for video/camera input (`isStill=false`). For still images (`isStill=true`), any value is acceptable.
+  - For camera input, use the capture time of each frame.
+  - For video input, increment by `1000.0 / fps` per frame (e.g., 0, 33, 66, … for 30 fps).
+  - Reset to 0 when switching to a new video — this triggers an internal context reset.
+  - Does not need to start from 0, but avoid overflow.
 - `const void* data` - Pointer to image buffer.
 - `size_t dataSize` - Total readable bytes.
 - `int32_t width` - Image width in pixels.
@@ -356,7 +374,7 @@ C `UpperbodySegmentationSDK` inference result.
 - Same resolution as input image
 - Foreground confidence per pixel:
   - `255`: confirmed foreground (human region)
-  - `1–254`: soft edge / transition region
+  - `1–254`: foreground confidence (may appear anywhere in the mask)
   - `0`: background
 
 #### Mask Compositing (How to apply the mask to an image)
@@ -401,7 +419,7 @@ Implementation notes:
 - Each pixel ranges from 0–255, representing foreground probability.
 - Pixel-level foreground confidence:
   - `255`: confirmed foreground (human region)
-  - `1–254`: soft edge / transition region
+  - `1–254`: foreground confidence (may appear anywhere in the mask)
   - `0`: background
   - Users may threshold (e.g., >128) to obtain a binary mask.
 
