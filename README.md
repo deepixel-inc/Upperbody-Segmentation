@@ -468,23 +468,23 @@ Implementation notes:
     - `blurSigma` - Gaussian blur sigma for segmentation post-processing (default: 0.5).
       - Lower values → sharper edges, potentially more noise
       - Higher values → smoother results, may reduce fine details
-    - `deviceRotation` - The rotation angle of the device in degrees (0°, 90°, 180°, 270°) (default: 0°)
+    - `deviceRotation` - Device rotation enum value (`DPXL_DEVICE_ROTATION_0`, `DPXL_DEVICE_ROTATION_90`, `DPXL_DEVICE_ROTATION_180`, `DPXL_DEVICE_ROTATION_270`) (default: `DPXL_DEVICE_ROTATION_0`)
     - `output` - Output structure to store the result.
   - Returns: `true` if processing/result generation succeeds, `false` otherwise.
 
 #### Device Rotation Guide (Video/Camera)
 
 - This guidance applies to `isStill=false` (video/camera input).
-- For `isStill=true` (single image), pass an upright image with `deviceRotation=0`.
-- Always pass an upright image to the SDK. Use `deviceRotation` to specify the device's rotation: 0 (portrait), 90 (landscape), 180 (upside-down), or 270 (landscape).
+- For `isStill=true` (single image), pass an upright image with `deviceRotation=DPXL_DEVICE_ROTATION_0`.
+- Always pass an upright image to the SDK. Use `deviceRotation` to specify the device's rotation: `DPXL_DEVICE_ROTATION_0` (portrait), `DPXL_DEVICE_ROTATION_90` (landscape), `DPXL_DEVICE_ROTATION_180` (upside-down), or `DPXL_DEVICE_ROTATION_270` (landscape).
 - The example sizes below use `720 x 1280` and `1280 x 720` because the sample images in this guide use those resolutions.
 
 | Rotation | When the user is holding the phone in this orientation | Image to pass to SDK | Image size WxH |
 |---|---|---|---|
-| 0° | <img src="docs/images/device-rotation-0-view.png" width="220" /> | <img src="docs/images/device-rotation-0-input.png" width="220" /> | 720 x 1280 |
-| 90° | <img src="docs/images/device-rotation-1-view.png" width="220" /> | <img src="docs/images/device-rotation-1-input.png" width="220" /> | 1280 x 720 |
-| 180° | <img src="docs/images/device-rotation-2-view.png" width="220" /> | <img src="docs/images/device-rotation-2-input.png" width="220" /> | 720 x 1280 |
-| 270° | <img src="docs/images/device-rotation-3-view.png" width="220" /> | <img src="docs/images/device-rotation-3-input.png" width="220" /> | 1280 x 720 |
+| `DPXL_DEVICE_ROTATION_0` (0°) | <img src="docs/images/device-rotation-0-view.png" width="220" /> | <img src="docs/images/device-rotation-0-input.png" width="220" /> | 720 x 1280 |
+| `DPXL_DEVICE_ROTATION_90` (90°) | <img src="docs/images/device-rotation-1-view.png" width="220" /> | <img src="docs/images/device-rotation-1-input.png" width="220" /> | 1280 x 720 |
+| `DPXL_DEVICE_ROTATION_180` (180°) | <img src="docs/images/device-rotation-2-view.png" width="220" /> | <img src="docs/images/device-rotation-2-input.png" width="220" /> | 720 x 1280 |
+| `DPXL_DEVICE_ROTATION_270` (270°) | <img src="docs/images/device-rotation-3-view.png" width="220" /> | <img src="docs/images/device-rotation-3-input.png" width="220" /> | 1280 x 720 |
 
 ## Minimal Include Examples
 
