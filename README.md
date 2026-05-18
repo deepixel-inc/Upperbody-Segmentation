@@ -477,7 +477,6 @@ Implementation notes:
 - This guidance applies to `isStill=false` (video/camera input).
 - For `isStill=true` (single image), pass an upright image with `deviceRotation=DPXL_DEVICE_ROTATION_0`.
 - Always pass an upright image to the SDK. Use `deviceRotation` to specify the device's rotation: `DPXL_DEVICE_ROTATION_0` (portrait), `DPXL_DEVICE_ROTATION_90` (landscape), `DPXL_DEVICE_ROTATION_180` (upside-down), or `DPXL_DEVICE_ROTATION_270` (landscape).
-- The example sizes below use `720 x 1280` and `1280 x 720` because the sample images in this guide use those resolutions.
 
 | Rotation | When the user is holding the phone in this orientation | Image to pass to SDK | Image size WxH |
 |---|---|---|---|
