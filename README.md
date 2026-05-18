@@ -195,7 +195,7 @@ Input frame descriptor for image processing APIs.
   - 1–254: soft edge / transition region
   - 0: background
 
-**Mask Compositing (How to apply the mask to an image)**:
+#### Mask Compositing (How to apply the mask to an image)
 
 - In application code, the typical next step is **compositing** (also commonly called alpha blending) between the original image and a replacement background.
 
@@ -359,7 +359,7 @@ C `UpperbodySegmentationSDK` inference result.
   - `1–254`: soft edge / transition region
   - `0`: background
 
-**Mask Compositing (How to apply the mask to an image)**:
+#### Mask Compositing (How to apply the mask to an image)
 
 - In application code, the typical next step is **compositing** (also commonly called alpha blending) between the original image and a replacement background.
 
