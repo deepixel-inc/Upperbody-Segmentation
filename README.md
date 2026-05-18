@@ -195,6 +195,34 @@ Input frame descriptor for image processing APIs.
   - 1–254: soft edge / transition region
   - 0: background
 
+**Mask Compositing (How to apply the mask to an image)**:
+
+- In application code, the typical next step is **compositing** (also commonly called alpha blending) between the original image and a replacement background.
+
+For each pixel (and each color channel):
+
+```
+output = original * alpha + backgroundTemplate * (1.0 - alpha)
+```
+
+Concept note:
+
+- The actual SDK mask output is in `[0, 255]`.
+- The equation above is a conceptual formula using normalized alpha (`alpha` in `[0, 1.0]`).
+- In production code, adapt this to your pipeline (data type, color format, precision, and performance constraints).
+
+Where:
+
+- `alpha` is the normalized value from `segmentationMask` (for example, `alpha = mask / 255.0`)
+- `alpha = 1.0` keeps the original pixel
+- `alpha = 0.0` uses the background pixel
+- `alpha` in `(0.0..1.0)` creates a soft transition near boundaries
+
+Implementation notes:
+
+- `mask` should be spatially aligned with the source frame (same width/height and orientation).
+- Perform math in float (or equivalent precision) and convert/clamp back to your output format as needed.
+
 ## CoreAI Class
 
 ### class xyz::deepixel::coreai::CoreAIUpperBodySegmentationNaver
@@ -330,6 +358,34 @@ C `UpperbodySegmentationSDK` inference result.
   - `255`: confirmed foreground (human region)
   - `1–254`: soft edge / transition region
   - `0`: background
+
+**Mask Compositing (How to apply the mask to an image)**:
+
+- In application code, the typical next step is **compositing** (also commonly called alpha blending) between the original image and a replacement background.
+
+For each pixel (and each color channel):
+
+```
+output = original * alpha + backgroundTemplate * (1.0 - alpha)
+```
+
+Concept note:
+
+- The actual SDK mask output is in `[0, 255]`.
+- The equation above is a conceptual formula using normalized alpha (`alpha` in `[0, 1.0]`).
+- In production code, adapt this to your pipeline (data type, color format, precision, and performance constraints).
+
+Where:
+
+- `alpha` is the normalized value from `segmentationMask` (for example, `alpha = mask / 255.0`)
+- `alpha = 1.0` keeps the original pixel
+- `alpha = 0.0` uses the background pixel
+- `alpha` in `(0.0..1.0)` creates a soft transition near boundaries
+
+Implementation notes:
+
+- `mask` should be spatially aligned with the source frame (same width/height and orientation).
+- Perform math in float (or equivalent precision) and convert/clamp back to your output format as needed.
 
 ## CoreAI Handle and Functions
 
