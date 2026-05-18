@@ -468,9 +468,23 @@ Implementation notes:
     - `blurSigma` - Gaussian blur sigma for segmentation post-processing (default: 0.5).
       - Lower values → sharper edges, potentially more noise
       - Higher values → smoother results, may reduce fine details
-    - `deviceRotation` - The rotation angle of the device (in degrees, counterclockwise) (default: 0)
+    - `deviceRotation` - Integer rotation code for device orientation (`0`, `1`, `2`, `3`) (default: `0`). This is not a degree value.
     - `output` - Output structure to store the result.
   - Returns: `true` if processing/result generation succeeds, `false` otherwise.
+
+#### Device Rotation Guide (Video/Camera)
+
+- This guidance applies to `isStill=false` (video/camera input).
+- For `isStill=true` (single image), pass an upright image with `deviceRotation=0`.
+- Always pass an upright image to the SDK. Use `deviceRotation` only as an integer orientation code (`0`, `1`, `2`, `3`).
+- The example sizes below use `720 x 1280` and `1280 x 720` because the sample images in this guide use those resolutions.
+
+| `deviceRotation` | When the user is holding the phone in this orientation | Image to pass to SDK | Image size WxH |
+|---|---|---|---|
+| `0` | <img src="docs/images/device-rotation-0-view.png" width="220" /> | <img src="docs/images/device-rotation-0-input.png" width="220" /> | 720 x 1280 |
+| `1` | <img src="docs/images/device-rotation-1-view.png" width="220" /> | <img src="docs/images/device-rotation-1-input.png" width="220" /> | 1280 x 720 |
+| `2` | <img src="docs/images/device-rotation-2-view.png" width="220" /> | <img src="docs/images/device-rotation-2-input.png" width="220" /> | 720 x 1280 |
+| `3` | <img src="docs/images/device-rotation-3-view.png" width="220" /> | <img src="docs/images/device-rotation-3-input.png" width="220" /> | 1280 x 720 |
 
 ## Minimal Include Examples
 
