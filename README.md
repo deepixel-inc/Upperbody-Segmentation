@@ -6,7 +6,7 @@ It outputs a segmentation mask corresponding to the detected human region, provi
 **seamlessly separate the human upper body from the background** for various applications.
 
 
-The SDK outputs a single-channel 8-bit grayscale image of the same resolution as the input. Pixel values range from 0 to 255, where 255 indicates the foreground and 0 indicates the background. Intermediate values may appear near foreground-background boundaries to create a soft transition and reduce aliasing artifacts,
+The SDK outputs a single-channel 8-bit grayscale image of the same resolution as the input. Pixel values range from 0 to 255, where 255 indicates the foreground and 0 indicates the background. Intermediate values (1–254) represent foreground confidence.
 
 
 Below is an illustration showing the **segmentation coverage**:
@@ -205,7 +205,7 @@ Input frame descriptor for image processing APIs.
 - Same resolution as input image
 - Foreground confidence per pixel:
   - 255: confirmed foreground (human region)
-  - 1–254: foreground confidence (may appear anywhere in the mask)
+  - 1–254: foreground confidence
   - 0: background
 
 #### Mask Compositing (How to apply the mask to an image)
@@ -229,7 +229,7 @@ Where:
 - `alpha` is the normalized value from `segmentationMask` (for example, `alpha = mask / 255.0`)
 - `alpha = 1.0` keeps the original pixel
 - `alpha = 0.0` uses the background pixel
-- `alpha` in `(0.0..1.0)` creates a soft transition near boundaries
+- `alpha` in `(0.0..1.0)` blends the original and background pixels proportionally
 
 Implementation notes:
 
@@ -250,7 +250,7 @@ High-performance `UpperbodySegmentationSDK` engine.
 - Each pixel ranges from 0–255, representing foreground probability.
 - Pixel-level foreground confidence:
   - `255`: confirmed foreground (human region)
-  - `1–254`: foreground confidence (may appear anywhere in the mask)
+  - `1–254`: foreground confidence
   - `0`: background
   - Users may threshold (e.g., >128) to obtain a binary mask.
 
@@ -374,7 +374,7 @@ C `UpperbodySegmentationSDK` inference result.
 - Same resolution as input image
 - Foreground confidence per pixel:
   - `255`: confirmed foreground (human region)
-  - `1–254`: foreground confidence (may appear anywhere in the mask)
+  - `1–254`: foreground confidence
   - `0`: background
 
 #### Mask Compositing (How to apply the mask to an image)
@@ -398,7 +398,7 @@ Where:
 - `alpha` is the normalized value from `segmentationMask` (for example, `alpha = mask / 255.0`)
 - `alpha = 1.0` keeps the original pixel
 - `alpha = 0.0` uses the background pixel
-- `alpha` in `(0.0..1.0)` creates a soft transition near boundaries
+- `alpha` in `(0.0..1.0)` blends the original and background pixels proportionally
 
 Implementation notes:
 
@@ -419,7 +419,7 @@ Implementation notes:
 - Each pixel ranges from 0–255, representing foreground probability.
 - Pixel-level foreground confidence:
   - `255`: confirmed foreground (human region)
-  - `1–254`: foreground confidence (may appear anywhere in the mask)
+  - `1–254`: foreground confidence
   - `0`: background
   - Users may threshold (e.g., >128) to obtain a binary mask.
 
