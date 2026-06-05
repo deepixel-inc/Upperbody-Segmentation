@@ -45,9 +45,9 @@ Below is an illustration showing the **segmentation coverage**:
 
 | Metric | Value | Description |
 | :--- | :---: | :--- |
-| Mean IoU <br> Mean Boundary F1 <br> Mean Boundary IoU | **86.53%** <br> **87.44%** <br> **77.99%** | PP-HumanSeg14K<br> validation dataset<br>(2,431 images) |
-| Mean IoU <br> Mean Boundary F1 <br> Mean Boundary IoU | **97.25%** <br> **95.13%** <br> **83.13%** | EasyPortrait<br> test dataset<br> (4,000 images) |
-| Mean IoU <br> Mean Boundary F1 <br> Mean Boundary IoU | **96.20%** <br> **91.52%** <br> **76.01%** | EG1800 dataset<br> (1,736 images) |
+| Mean IoU <br> Mean Boundary F1 <br> Mean Boundary IoU | **86.48%** <br> **87.40%** <br> **77.96%** | PP-HumanSeg14K<br> validation dataset<br>(2,431 images) |
+| Mean IoU <br> Mean Boundary F1 <br> Mean Boundary IoU | **97.19%** <br> **95.04%** <br> **82.98%** | EasyPortrait<br> test dataset<br> (4,000 images) |
+| Mean IoU <br> Mean Boundary F1 <br> Mean Boundary IoU | **96.11%** <br> **91.20%** <br> **75.52%** | EG1800 dataset<br> (1,736 images) |
 
 ### Benchmark Note
 
