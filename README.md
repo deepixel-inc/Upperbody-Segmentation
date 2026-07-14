@@ -276,7 +276,9 @@ High-performance `UpperbodySegmentationSDK` engine.
   - Check if algorithm is initialized.
   - Returns: `true` if initialized, `false` otherwise.
 
-<h3 id="cpp-inference">C++ Inference</h3>
+<a name="cpp-inference"></a>
+
+### C++ API Inference
 
 - `CoreAIUpperBodySegmentationOutput process(const FrameInput& data, double blurSigma = 0.5, DP_DEVICE_ROTATION deviceRotation = DP_DEVICE_ROTATION_0, bool trimMaskEdge = false)`
   - Process an image with configurable device rotation and mask-edge trimming.
@@ -447,7 +449,9 @@ Implementation notes:
   - Parameters: `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
   - Returns: `true` if initialized, `false` otherwise.
 
-<h3 id="c-inference">C Inference</h3>
+<a name="c-inference"></a>
+
+### C API Inference
 
 For new integrations, use `dpxl_coreai_upperbodyseg_naver_process_with_trim_mask_edge`. It supports configurable device rotation and mask-edge trimming, and can reproduce the behavior of both legacy inference functions. The legacy functions remain available for backward compatibility.
 
