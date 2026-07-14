@@ -647,7 +647,7 @@ In this repository, the recommended JS surface is the wrapper in `samples-naver/
   - `async initialize(): Promise<boolean>`
   - `async isInitialized(): Promise<boolean>`
   - `isProcessing(): boolean`
-  - `async process(timestamp, dataPtr, dataSize, width, height, stride, imageType, isStill, blurSigma = 0.5, deviceRotation = 0): Promise<ProcessResult>`
+  - `async process(timestamp, dataPtr, dataSize, width, height, stride, imageType, isStill, blurSigma = 0.5, deviceRotation = 0, trimMaskEdge = false): Promise<ProcessResult>`
   - `destroy(): void`
 
 `ProcessResult` shape:
@@ -670,6 +670,7 @@ In this repository, the recommended JS surface is the wrapper in `samples-naver/
 - `isStill` -> `DpxlFrameInput.isStill`
 - `blurSigma` -> `dpxl_coreai_upperbodyseg_naver_process(..., blurSigma, ...)`
 - `deviceRotation` -> `dpxl_coreai_upperbodyseg_naver_process_with_device_rotation(..., deviceRotation, ...)`
+- `trimMaskEdge` -> `dpxl_coreai_upperbodyseg_naver_process_with_trim_mask_edge(..., trimMaskEdge, ...)`
 
 ### ImageType in Browser Sample
 
@@ -701,7 +702,8 @@ const result = await seg.process(
   imageType,
   true,
   0.5,
-  deviceRotation
+  deviceRotation,
+  false
 );
 
 wasmModule._free(imagePtr);
