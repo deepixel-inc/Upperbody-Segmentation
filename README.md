@@ -72,7 +72,7 @@ Below is an illustration showing the **segmentation coverage**:
 ## **HumanX Native NAVER API Reference**
 
 Created Date: 2026-04-14
-Updated Date: 2026-05-11
+Updated Date: 2026-07-14
 
 ## Scope
 
@@ -101,8 +101,8 @@ Updated Date: 2026-05-11
 - `humanx/image_buffer_c.h`
 - `humanx/frame_input.hpp`
 - `humanx/frame_input_c.h`
-- `humanx/upper_body_segmentation_types.hpp`
-- `humanx/upper_body_segmentation_types_c.h`
+- `humanx/coreai/upper_body_segmentation_types.hpp`
+- `humanx/coreai/upper_body_segmentation_types_c.h`
 - `humanx/humanx_export.h`
 
 ## C++ API
@@ -258,38 +258,33 @@ High-performance `UpperbodySegmentationSDK` engine.
 
 **Lifecycle**:
 
-- `DpxlCoreAIUpperBodySegmentationNaver* dpxl_coreai_upperbodyseg_naver_create(void)`
-  - Create and initialize CoreAIUpperBodySegmentationNaver instance.
-  - Returns: Opaque pointer to CoreAIUpperBodySegmentationNaver instance.
-
-- `void dpxl_coreai_upperbodyseg_naver_destroy(DpxlCoreAIUpperBodySegmentationNaver* handle)`
-  - Destroy CoreAIUpperBodySegmentationNaver instance.
-  - Parameters: `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
+- `CoreAIUpperBodySegmentationNaver()` - Create an engine instance.
+- `~CoreAIUpperBodySegmentationNaver()` - Destroy the engine instance and release its resources.
 
 **Initialization**:
 
-- `bool dpxl_coreai_upperbodyseg_naver_initialize(DpxlCoreAIUpperBodySegmentationNaver* handle)`
-  - Initialize `UpperbodySegmentationSDK` with license key.
-  - Parameters: `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
+- `bool initialize()`
+  - Initialize `UpperbodySegmentationSDK`.
   - Returns: `true` if initialization succeeds, `false` otherwise.
 
-- `bool dpxl_coreai_upperbodyseg_naver_is_initialized(DpxlCoreAIUpperBodySegmentationNaver* handle)`
+- `bool isInitialized() const`
   - Check if algorithm is initialized.
-  - Parameters: `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
   - Returns: `true` if initialized, `false` otherwise.
 
 **Inference**:
 
-- `bool dpxl_coreai_upperbodyseg_naver_process(DpxlCoreAIUpperBodySegmentationNaver* handle, const DpxlFrameInput* data, double blurSigma, DpxlCoreAIUpperBodySegmentationOutput* output)`
-  - Process image for `UpperbodySegmentationSDK`.
+- `CoreAIUpperBodySegmentationOutput process(const FrameInput& data, double blurSigma = 0.5, DP_DEVICE_ROTATION deviceRotation = DP_DEVICE_ROTATION_0, bool trimMaskEdge = false)`
+  - Process an image with configurable device rotation and mask-edge trimming.
   - Parameters:
-    - `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
     - `data` - Processing data containing image information.
-    - `blurSigma` - Gaussian blur sigma for segmentation post-processing (default: 0.5).
+    - `blurSigma` - Gaussian blur sigma for segmentation pre-processing (default: `0.5`).
       - Lower values → sharper edges, potentially more noise
       - Higher values → smoother results, may reduce fine details
-    - `output` - Output structure to store the result.
-  - Returns: `true` if processing/result generation succeeds, `false` otherwise.
+    - `deviceRotation` - Device rotation in degrees clockwise (default: `DP_DEVICE_ROTATION_0`).
+    - `trimMaskEdge` - Whether to erode the foreground mask boundary inward (default: `false`).
+      - `false` preserves the original segmentation-mask boundary.
+      - `true` reduces background leakage and visible edge artifacts during compositing, but may remove a small portion of the foreground near the person's boundary.
+  - Returns: Segmentation output for the processed frame.
 
 ## C API
 
@@ -438,7 +433,7 @@ Implementation notes:
 **Initialization**:
 
 - `bool dpxl_coreai_upperbodyseg_naver_initialize(DpxlCoreAIUpperBodySegmentationNaver* handle)`
-  - Initialize `UpperbodySegmentationSDK` with license key.
+  - Initialize `UpperbodySegmentationSDK`.
   - Parameters: `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
   - Returns: `true` if initialization succeeds, `false` otherwise.
 
@@ -449,34 +444,62 @@ Implementation notes:
 
 **Inference**:
 
-- `bool dpxl_coreai_upperbodyseg_naver_process(DpxlCoreAIUpperBodySegmentationNaver* handle, const DpxlFrameInput* data, double blurSigma, DpxlCoreAIUpperBodySegmentationOutput* output)`
-  - Process image for `UpperbodySegmentationSDK`.
+For new integrations, use `dpxl_coreai_upperbodyseg_naver_process_with_trim_mask_edge`. It supports configurable device rotation and mask-edge trimming, and can reproduce the behavior of both legacy inference functions. The legacy functions remain available for backward compatibility.
+
+- `bool dpxl_coreai_upperbodyseg_naver_process_with_trim_mask_edge(DpxlCoreAIUpperBodySegmentationNaver* handle, const DpxlFrameInput* data, double blurSigma, DpxlDeviceRotation deviceRotation, bool trimMaskEdge, DpxlCoreAIUpperBodySegmentationOutput* output)`
+  - Recommended C inference API. Processes an image with configurable device rotation and mask-edge trimming.
   - Parameters:
     - `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
     - `data` - Processing data containing image information.
-    - `blurSigma` - Gaussian blur sigma for segmentation post-processing (default: 0.5).
+    - `blurSigma` - Gaussian blur sigma for segmentation pre-processing (recommended value: `0.5`).
+      - Lower values → sharper edges, potentially more noise
+      - Higher values → smoother results, may reduce fine details
+    - `deviceRotation` - Device rotation enum value (`DPXL_DEVICE_ROTATION_0`, `DPXL_DEVICE_ROTATION_90`, `DPXL_DEVICE_ROTATION_180`, or `DPXL_DEVICE_ROTATION_270`).
+    - `trimMaskEdge` - Whether to erode the foreground mask boundary inward.
+      - `false` preserves the original segmentation-mask boundary.
+      - `true` can reduce background leakage and visible edge artifacts during compositing, but may remove a small portion of the foreground near the person's boundary.
+    - `output` - Output structure to store the result.
+  - Returns: `true` if processing/result generation succeeds, `false` otherwise.
+
+**Legacy inference functions (backward compatibility)**:
+
+- `bool dpxl_coreai_upperbodyseg_naver_process(DpxlCoreAIUpperBodySegmentationNaver* handle, const DpxlFrameInput* data, double blurSigma, DpxlCoreAIUpperBodySegmentationOutput* output)`
+  - Processes an image using `DPXL_DEVICE_ROTATION_0` with mask-edge trimming disabled.
+  - Parameters:
+    - `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
+    - `data` - Processing data containing image information.
+    - `blurSigma` - Gaussian blur sigma for segmentation pre-processing (recommended value: `0.5`).
       - Lower values → sharper edges, potentially more noise
       - Higher values → smoother results, may reduce fine details
     - `output` - Output structure to store the result.
   - Returns: `true` if processing/result generation succeeds, `false` otherwise.
 
 - `bool dpxl_coreai_upperbodyseg_naver_process_with_device_rotation(DpxlCoreAIUpperBodySegmentationNaver* handle, const DpxlFrameInput* data, double blurSigma, DpxlDeviceRotation deviceRotation, DpxlCoreAIUpperBodySegmentationOutput* output)`
-  - Process image for `UpperbodySegmentationSDK`.
+  - Processes an image with the specified device rotation and mask-edge trimming disabled.
   - Parameters:
     - `handle` - Pointer to CoreAIUpperBodySegmentationNaver instance.
     - `data` - Processing data containing image information.
-    - `blurSigma` - Gaussian blur sigma for segmentation post-processing (default: 0.5).
+    - `blurSigma` - Gaussian blur sigma for segmentation pre-processing (recommended value: `0.5`).
       - Lower values → sharper edges, potentially more noise
       - Higher values → smoother results, may reduce fine details
-    - `deviceRotation` - Device rotation enum value (`DPXL_DEVICE_ROTATION_0`, `DPXL_DEVICE_ROTATION_90`, `DPXL_DEVICE_ROTATION_180`, `DPXL_DEVICE_ROTATION_270`) (default: `DPXL_DEVICE_ROTATION_0`)
+    - `deviceRotation` - Device rotation enum value (`DPXL_DEVICE_ROTATION_0`, `DPXL_DEVICE_ROTATION_90`, `DPXL_DEVICE_ROTATION_180`, or `DPXL_DEVICE_ROTATION_270`).
     - `output` - Output structure to store the result.
   - Returns: `true` if processing/result generation succeeds, `false` otherwise.
+
+The following calls are behaviorally equivalent:
+
+| Legacy API | Equivalent recommended API parameters |
+|---|---|
+| `dpxl_coreai_upperbodyseg_naver_process(...)` | `deviceRotation = DPXL_DEVICE_ROTATION_0`, `trimMaskEdge = false` |
+| `dpxl_coreai_upperbodyseg_naver_process_with_device_rotation(...)` | Same `deviceRotation`, `trimMaskEdge = false` |
 
 #### Device Rotation Guide (Video/Camera)
 
 - This guidance applies to `isStill=false` (video/camera input).
-- For `isStill=true` (single image), pass an upright image and call `dpxl_coreai_upperbodyseg_naver_process` (no need to specify device rotation).
-- For `isStill=false` (video/camera), always pass an upright image and call `dpxl_coreai_upperbodyseg_naver_process_with_device_rotation` with the appropriate device rotation.
+- For new C integrations, use `dpxl_coreai_upperbodyseg_naver_process_with_trim_mask_edge` for both still and video/camera input.
+- For `isStill=true` (single image), pass an upright image and use `DPXL_DEVICE_ROTATION_0`.
+- For `isStill=false` (video/camera), always pass an upright image and specify the appropriate device rotation.
+- Set `trimMaskEdge` to `true` when inward erosion is desired, or `false` to preserve the original mask boundary.
 
 | Rotation | When the user is holding the phone in this orientation | Image to pass to SDK | Image size WxH |
 |---|---|---|---|
@@ -502,7 +525,7 @@ mOrientationListener = object : OrientationEventListener(this) {
             in 135..224 -> DpxlDeviceRotation.DPXL_DEVICE_ROTATION_180            // 180°
             else -> DpxlDeviceRotation.DPXL_DEVICE_ROTATION_270                   // 270°
         }
-        // Use dpxlRotation when calling process_with_device_rotation()
+        // Pass dpxlRotation to process_with_trim_mask_edge().
     }
 }
 ```
@@ -521,7 +544,12 @@ CoreAIUpperBodySegmentationNaver engine;
 if (engine.initialize()) {
     FrameInput in;
     // fill in.frame / in.imageType / in.timestamp / in.isStill
-    auto out = engine.process(in, 0.5);
+    auto out = engine.process(
+        in,
+        0.5,
+        DP_DEVICE_ROTATION_0,
+        true // erode the foreground mask boundary inward
+    );
 }
 ```
 
@@ -534,12 +562,59 @@ DpxlCoreAIUpperBodySegmentationNaver* h = dpxl_coreai_upperbodyseg_naver_create(
 if (h && dpxl_coreai_upperbodyseg_naver_initialize(h)) {
     DpxlFrameInput in = {0};
     DpxlCoreAIUpperBodySegmentationOutput out = {0};
-    dpxl_coreai_upperbodyseg_naver_process(h, &in, 0.5, &out);
+    dpxl_coreai_upperbodyseg_naver_process_with_trim_mask_edge(
+        h,
+        &in,
+        0.5,
+        DPXL_DEVICE_ROTATION_0,
+        true, // erode the foreground mask boundary inward
+        &out
+    );
 }
 dpxl_coreai_upperbodyseg_naver_destroy(h);
 ```
 
+### Migrating Legacy C Calls
+
+```c
+// Legacy: rotation 0, mask-edge trimming disabled
+dpxl_coreai_upperbodyseg_naver_process(handle, &input, 0.5, &output);
+
+// Recommended equivalent
+dpxl_coreai_upperbodyseg_naver_process_with_trim_mask_edge(
+    handle,
+    &input,
+    0.5,
+    DPXL_DEVICE_ROTATION_0,
+    false,
+    &output
+);
+```
+
+```c
+// Legacy: explicit rotation, mask-edge trimming disabled
+dpxl_coreai_upperbodyseg_naver_process_with_device_rotation(
+    handle,
+    &input,
+    0.5,
+    rotation,
+    &output
+);
+
+// Recommended equivalent
+dpxl_coreai_upperbodyseg_naver_process_with_trim_mask_edge(
+    handle,
+    &input,
+    0.5,
+    rotation,
+    false,
+    &output
+);
+```
+
 ## JavaScript API (WASM)
+
+> **Availability note:** The current JavaScript/WASM wrapper does not expose the `trimMaskEdge` option. Mask-edge trimming is currently documented for the C and C++ APIs only.
 
 ### Runtime Module Factory
 
