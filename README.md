@@ -9,10 +9,14 @@ It outputs a segmentation mask corresponding to the detected human region, provi
 The SDK outputs a single-channel 8-bit grayscale image of the same resolution as the input. Pixel values range from 0 to 255, where 255 indicates the foreground and 0 indicates the background. Intermediate values (1–254) represent foreground confidence.
 
 
-Below is an illustration showing the **segmentation coverage**:
+Below are examples of the **segmentation coverage**, showing the original image, segmentation mask, and a mask-based overlay from left to right. The overlay preserves the foreground and tints the background blue.
+
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/cb54bf83-745c-49bd-90ae-1816b20d01bd" width="48%" />
-  <img src="https://github.com/user-attachments/assets/7d8396af-885a-496e-a74b-257dd384fa48" width="48%" />
+  <a href="docs/sample_images/previews/natural_selfie_in_cozy_room.png"><img src="docs/sample_images/previews/natural_selfie_in_cozy_room.png" alt="Original image, segmentation mask, and blue-tinted background overlay from left to right" /></a>
+  <a href="docs/sample_images/previews/news_anchor_broadcasting_in_nighttime_newsroom.png"><img src="docs/sample_images/previews/news_anchor_broadcasting_in_nighttime_newsroom.png" alt="Original image, segmentation mask, and blue-tinted background overlay from left to right" /></a>
+  <a href="docs/sample_images/previews/smile_and_coffee_in_cozy_cafe.png"><img src="docs/sample_images/previews/smile_and_coffee_in_cozy_cafe.png" alt="Original image, segmentation mask, and blue-tinted background overlay from left to right" /></a>
+  <a href="docs/sample_images/previews/smile_at_sunny_outdoor_cafe.png"><img src="docs/sample_images/previews/smile_at_sunny_outdoor_cafe.png" alt="Original image, segmentation mask, and blue-tinted background overlay from left to right" /></a>
+  <a href="docs/sample_images/previews/woman_smiling_in_cozy_home_office.png"><img src="docs/sample_images/previews/woman_smiling_in_cozy_home_office.png" alt="Original image, segmentation mask, and blue-tinted background overlay from left to right" /></a>
 </p>
 
 ## **Key Features**
